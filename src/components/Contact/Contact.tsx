@@ -1,4 +1,4 @@
-import { Avatar, Box, Checkbox, Paper } from "@mui/material";
+import { Avatar, Box, Checkbox } from "@mui/material";
 
 export interface ContactInterface {
   id: number;
