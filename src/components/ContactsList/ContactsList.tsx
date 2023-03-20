@@ -2,6 +2,7 @@ import { Box, IconButton, Input, InputAdornment, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
+import LazyLoad from "react-lazy-load";
 
 import Contact, { ContactInterface } from "../Contact/Contact";
 
@@ -11,33 +12,28 @@ const ContactsList = () => {
   const [searchInput, setSearchInput] = useState("");
 
   const handleCheck = (id: number) => {
-    const userIdx = users.findIndex((el) => el.id === id);
-    const usersCopy = [...users];
-    const checkedIds = [...checked];
-    const checkedIdIdx = checkedIds.findIndex((el) => el === id);
+    const elementIdx = checked.findIndex((el) => el === id);
 
-    usersCopy[userIdx].checked = !usersCopy[userIdx].checked;
-    setUsers(usersCopy);
-
-    if (checkedIdIdx > -1) {
-      checkedIds.splice(checkedIdIdx);
+    if (elementIdx < 0) {
+      const checkedElements = [...checked, id];
+      setChecked(checkedElements);
+      console.log("Checked id's:", ...checkedElements);
     } else {
-      checkedIds.push(id);
+      const checkedElements = [...checked].filter((el) => el !== id);
+
+      setChecked(checkedElements);
+      console.log("Checked id's:", ...checkedElements);
     }
-    setChecked(checkedIds);
-    console.log("Checked id's:", ...checkedIds);
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetch(
+      const response = await fetch(
         "https://teacode-recruitment-challenge.s3.eu-central-1.amazonaws.com/users.json"
-      ).then((data) => data.json());
-      const formattedData = data
-        .map((el: ContactInterface) => {
-          return { ...el, checked: false };
-        })
-        .sort((a: ContactInterface, b: ContactInterface) => {
+      );
+      const data = await response.json();
+      const formattedData = data.sort(
+        (a: ContactInterface, b: ContactInterface) => {
           const nameA = a.last_name;
           const nameB = b.last_name;
           if (nameA < nameB) {
@@ -47,7 +43,8 @@ const ContactsList = () => {
             return 1;
           }
           return 0;
-        });
+        }
+      );
 
       setUsers(formattedData);
     };
@@ -97,11 +94,13 @@ const ContactsList = () => {
           )
           .map((el) => {
             return (
-              <Contact
-                user={el}
-                key={el.id}
-                onChecked={() => handleCheck(el.id)}
-              />
+              <LazyLoad key={el.id}>
+                <Contact
+                  user={el}
+                  onChecked={() => handleCheck(el.id)}
+                  isChecked={checked.includes(el.id)}
+                />
+              </LazyLoad>
             );
           })}
       </Stack>

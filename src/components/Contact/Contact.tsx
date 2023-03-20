@@ -11,11 +11,13 @@ export interface ContactInterface {
 const Contact = ({
   user,
   onChecked,
+  isChecked,
 }: {
   user: ContactInterface;
   onChecked: (id: number) => any;
+  isChecked: boolean;
 }) => {
-  const { id, avatar, first_name, last_name, checked } = user;
+  const { id, avatar, first_name, last_name } = user;
 
   return (
     <Box
@@ -36,7 +38,7 @@ const Contact = ({
     >
       <Avatar src={avatar} alt={`${first_name} ${last_name}`} />
       <p>{`${first_name} ${last_name}`}</p>
-      <Checkbox checked={checked} />
+      <Checkbox checked={isChecked} />
     </Box>
   );
 };
