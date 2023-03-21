@@ -26,6 +26,23 @@ const ContactsList = () => {
     }
   };
 
+  const filterResults = (input: string, element: ContactInterface) => {
+    return (
+      element.first_name
+        .toLocaleLowerCase()
+        .includes(input.toLocaleLowerCase()) ||
+      element.last_name
+        .toLocaleLowerCase()
+        .includes(input.toLocaleLowerCase()) ||
+      `${element.first_name.toLocaleLowerCase()} ${element.last_name.toLocaleLowerCase()}`.includes(
+        input.toLocaleLowerCase()
+      ) ||
+      `${element.last_name.toLocaleLowerCase()} ${element.first_name.toLocaleLowerCase()}`.includes(
+        input.toLocaleLowerCase()
+      )
+    );
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
@@ -83,15 +100,7 @@ const ContactsList = () => {
       />
       <Stack sx={{ gap: "1rem" }}>
         {users
-          .filter(
-            (el) =>
-              el.first_name
-                .toLocaleLowerCase()
-                .includes(searchInput.toLocaleLowerCase()) ||
-              el.last_name
-                .toLocaleLowerCase()
-                .includes(searchInput.toLocaleLowerCase())
-          )
+          .filter((el) => filterResults(searchInput, el))
           .map((el) => {
             return (
               <LazyLoad key={el.id}>
